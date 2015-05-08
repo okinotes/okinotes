@@ -7,11 +7,11 @@ package okinotes
 
 import (
 	"errors"
+	"fmt"
 	"html/template"
 	"net/http"
 	"regexp"
 	"time"
-	"fmt"
 )
 
 var (
@@ -348,7 +348,7 @@ func (app App) CreateItem(userName, pageName string, i Item) (Item, error) {
 	}
 
 	if len(i.Content) == 0 && len(i.URL) == 0 {
-		return Item{}, errors.New(fmt.Sprintf("Empty item not allowed. Either content or URL must be provided: %#v", i))
+		return Item{}, fmt.Errorf("Empty item not allowed. Either content or URL must be provided: %#v", i)
 	}
 
 	//Compute HTML from markdown

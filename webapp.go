@@ -10,9 +10,9 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"net/http"
 	"time"
-	"io/ioutil"
 
 	"github.com/gorilla/mux"
 	"golang.org/x/tools/blog/atom"
@@ -91,6 +91,7 @@ func RegisterPagesOnRouter(m *mux.Router, f AppFactory) error {
 
 	return nil
 }
+
 //RegisterAPIOnRouter initializes the router for the API of the webapp
 func RegisterAPIOnRouter(m *mux.Router, f AppFactory) error {
 
@@ -98,10 +99,10 @@ func RegisterAPIOnRouter(m *mux.Router, f AppFactory) error {
 	m.HandleFunc("/currentUser", makeAppHandler(getCurrentUser, f, http.StatusOK)).Methods("GET")
 
 	m.HandleFunc("/users/{userName}/pages/{pageName}", makeAppHandler(getPage, f, http.StatusOK)).Methods("GET")
-	
+
 	m.HandleFunc("/users/{userName}/pages/{pageName}/items", makeAppHandler(getItems, f, http.StatusOK)).Methods("GET")
 	m.HandleFunc("/users/{userName}/pages/{pageName}/items", makeAppHandler(createItem, f, http.StatusCreated)).Methods("POST")
-	
+
 	m.HandleFunc("/users/{userName}/pages/{pageName}/items/{itemID}", makeAppHandler(editItem, f, http.StatusAccepted)).Methods("POST")
 	m.HandleFunc("/users/{userName}/pages/{pageName}/items/{itemID}", makeAppHandler(putItem, f, http.StatusOK)).Methods("PUT")
 	m.HandleFunc("/users/{userName}/pages/{pageName}/items/{itemID}", makeAppHandler(deleteItem, f, http.StatusOK)).Methods("DELETE")
@@ -129,7 +130,7 @@ func handleError(w http.ResponseWriter, r *http.Request, err error, app App) {
 
 	data := struct {
 		sharedData
-		ErrorCode int
+		ErrorCode    int
 		ErrorMessage string
 	}{}
 
@@ -138,16 +139,16 @@ func handleError(w http.ResponseWriter, r *http.Request, err error, app App) {
 		logger.Errorf("%v", execErr)
 		http.Error(w, execErr.Error(), http.StatusInternalServerError)
 	}
-	
+
 	if _, ok := err.(NotInDatastoreError); ok {
-		data.ErrorCode = http.StatusNotFound                     
+		data.ErrorCode = http.StatusNotFound
 	} else if _, ok := err.(NotAuthorizedError); ok {
-		data.ErrorCode = http.StatusUnauthorized                     
+		data.ErrorCode = http.StatusUnauthorized
 	} else {
 		data.ErrorCode = http.StatusInternalServerError
 	}
 	data.ErrorMessage = err.Error()
-	
+
 	execErr = allTemplates.ExecuteTemplate(w, "error.html.tpl", &data)
 	if execErr != nil {
 		logger.Errorf("%v", execErr)
@@ -466,7 +467,7 @@ func pageCreatePost(r *http.Request, app App) (handler, error) {
 
 		return redirectHandler{loginURL}, nil
 	}
-	
+
 	if _, err := app.GetTemplate(templateID); err != nil {
 		templateID = "blog2col"
 	}
@@ -538,12 +539,12 @@ func pageAdminPost(r *http.Request, app App) (handler, error) {
 	}
 
 	newPage := Page{
-		UserName:   userName,
-		Name:       pageName,
-		Title:      newTitle,
-		ContentLicense:     newContentLicense,
-		Policy:     newPolicy,
-		TemplateID: page.TemplateID, //TODO: editable ?
+		UserName:       userName,
+		Name:           pageName,
+		Title:          newTitle,
+		ContentLicense: newContentLicense,
+		Policy:         newPolicy,
+		TemplateID:     page.TemplateID, //TODO: editable ?
 	}
 
 	for _, tag := range template.PageTags {
@@ -748,7 +749,7 @@ func cacheManifestPage(r *http.Request, app App) (handler, error) {
 	if !ok {
 		return nil, errors.New("Conversion failed")
 	}
-	
+
 	cacheTemplate := "p_cache.manifest.tpl"
 	return templateHandler{cacheTemplate, data}, nil
 }
@@ -794,8 +795,8 @@ func xmlPage(r *http.Request, app App) (handler, error) {
 
 		if len(item.URL) > 0 {
 			entry.Link = append(entry.Link, atom.Link{
-				Rel  : "related", 
-				Href : item.URL,
+				Rel:  "related",
+				Href: item.URL,
 			})
 		}
 		if len(item.Source) > 0 {
@@ -1130,7 +1131,7 @@ func getPage(r *http.Request, app App) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return page, nil
 }
 
@@ -1143,18 +1144,18 @@ func getItems(r *http.Request, app App) (interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	if items == nil {
 		items = []Item{}
 	}
-	
+
 	return items, nil
 }
 func createItem(r *http.Request, app App) (interface{}, error) {
 	vars := mux.Vars(r)
 	userName := vars["userName"]
 	pageName := vars["pageName"]
-	
+
 	newItem := Item{
 		Kind:    r.FormValue("kind"),
 		Title:   r.FormValue("title"),
@@ -1162,7 +1163,7 @@ func createItem(r *http.Request, app App) (interface{}, error) {
 		Source:  r.FormValue("source"),
 		URL:     r.FormValue("URL"),
 	}
-	
+
 	//Check for JSON body
 	if r.Body != nil {
 		if body, err := ioutil.ReadAll(r.Body); err == nil {
@@ -1185,7 +1186,7 @@ func putItem(r *http.Request, app App) (interface{}, error) {
 	userName := vars["userName"]
 	pageName := vars["pageName"]
 	itemID := vars["itemID"]
-	
+
 	var newItem Item
 	//Check for JSON body
 	if r.Body != nil {

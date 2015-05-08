@@ -11,7 +11,7 @@ const (
 	//UserKindUSER are users having an identity
 	UserKindUSER UserKind = "USER"
 	//UserKindORG represents a group of users
-	UserKindORG  UserKind = "ORG"
+	UserKindORG UserKind = "ORG"
 )
 
 //User represents someone interacting with notes
