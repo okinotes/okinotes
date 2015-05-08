@@ -770,7 +770,7 @@ func xmlPage(r *http.Request, app App) (handler, error) {
 
 	atomXML := atom.Feed{
 		Title: data.Page.Title,
-		ID:    "wizynotes:page:" + data.Page.UserName + "/" + data.Page.Name,
+		ID:    "okinotes:page:" + data.Page.UserName + "/" + data.Page.Name,
 		//Link: ,
 		Updated: atom.Time(data.Page.LastModificationDate),
 		Author: &atom.Person{
@@ -781,7 +781,7 @@ func xmlPage(r *http.Request, app App) (handler, error) {
 	for _, item := range data.Items {
 		entry := atom.Entry{
 			Title: item.Title,
-			ID:    "wizynotes:item:" + item.ID,
+			ID:    "okinotes:item:" + item.ID,
 			//Link
 			Published: atom.Time(item.CreationDate),
 			Updated:   atom.Time(item.LastModificationDate),

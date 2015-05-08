@@ -2,7 +2,7 @@
 // Use of this source code is governed by a MIT-style
 // license that can be found in the LICENSE file.
 
-//Package okinotes contains all the model and business layers for the wizynotes application.
+//Package okinotes contains all the model and business layers for the okinotes application.
 package okinotes
 
 import (
